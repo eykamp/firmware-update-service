@@ -10,7 +10,7 @@ from flask import Flask, request, Response
 
 app = Flask(__name__)
 
-FIRMWARE_LOCATION = "/var/www/html/spy-pond-door"            # Location on the server
+FIRMWARE_LOCATION = "firmware-images"            # Location on the server
 
 HashedFirmware = NamedTuple("HashedFirmware", [("data", bytes), ("md5", str)])    # Type def for firmware info
 
