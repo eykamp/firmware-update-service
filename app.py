@@ -1,5 +1,4 @@
 # To deploy to Heroku:
-#   For staging: git push stage master
 #   For production: git push pro master
 
 
@@ -28,11 +27,18 @@ def welcome():
     return "Welcome to the Trans-Planetary Corporation Firmware Update Service!"
 
 
+# Same as update but without the version checks
+@app.route("/test/<name>", methods=["GET"])
+def update(name):
+    firmware = get_firmware(FIRMWARE_LOCATION + "/" + name)
+
+    print("Sending firmware")
+    return Response(firmware.data, mimetype="application/octet-stream", headers={"X-MD5": firmware.md5})
+
+
 # door_opener.ino.bin
 @app.route("/update/<name>", methods=["GET"])
 def update(name):
-    # Returns the full file/path of the latest firmware, or None if we are
-    # already running the latest
     client_md5 = request.headers["HTTP_X_ESP8266_SKETCH_MD5"]
 
     firmware = get_firmware(FIRMWARE_LOCATION + "/" + name)
