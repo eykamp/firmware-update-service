@@ -1,6 +1,11 @@
 # To deploy to Heroku:
 #   For production: git push pro master
 
+# View logs: heroku logs --tail --remote pro
+
+# curl -F "file=.gitignore" localhost:5000/put -H "key: 12345"
+# curl -F "file=.gitignore" https://firmware-update-service.herokuapp.com/put -H "key: 12345"
+
 """
 Start postgres from cmd:
     heroku pg:psql -a firmware-update-service
@@ -55,7 +60,7 @@ def app_exists(cur, key: str) -> bool:
 
 
 @app.route("/put", methods=["POST"])
-def update():
+def upload_firmware():
     if "key" not in request.headers:
         return "Missing key", 422
 
