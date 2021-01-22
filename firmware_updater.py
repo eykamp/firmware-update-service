@@ -1,3 +1,8 @@
+# To deploy to Heroku:
+#   For staging: git push stage master
+#   For production: git push pro master
+
+
 import hashlib
 from collections import namedtuple
 from typing import NamedTuple
@@ -5,7 +10,7 @@ from flask import Flask
 
 app = Flask(__name__)
 
-FIRMWARE_LOCATION = "/var/www/html/spy-pond-door/door_opener.ino.bin"            # Location on the server
+FIRMWARE_LOCATION = "/var/www/html/spy-pond-door"            # Location on the server
 
 HashedFirware = NamedTuple("HashedFirware", [("data", bytes), ("md5", str)])    # Type def for firmware info
 
@@ -19,19 +24,20 @@ def get_firmware(firmware_path: str) -> HashedFirware:
 
 
 @app.route('/')
-def hello_world():
+def welcome():
     return "Welcome to the Trans-Planetary Corporation Firmware Update Service!"
 
 
-@app.route("/update-spy-pond", methods=["GET"])
-def update():
+# door_opener.ino.bin
+@app.route("/update/<name>", methods=["GET"])
+def update(name):
     # Returns the full file/path of the latest firmware, or None if we are
     # already running the latest
     # current_version = request.headers['HTTP_X_ESP8266_VERSION']
     # mac = request.headers['HTTP_X_ESP8266_STA_MAC']
     client_md5 = request.headers["HTTP_X_ESP8266_SKETCH_MD5"]
 
-    firmware = get_firmware(FIRMWARE_LOCATION)
+    firmware = get_firmware(FIRMWARE_LOCATION + "/" + name)
     if client_md5 == firmware.md5:
         print("Already have most recent firmware")
         return "", 302
