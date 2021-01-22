@@ -1,25 +1,36 @@
 # To deploy to Heroku:
 #   For production: git push pro master
 
+"""
+Start postgres from cmd:
+    heroku pg:psql -a firmware-update-service
+
+Postgres table structure:
+    create table firmware (
+      key text unique not null,
+      md5 text not null,
+      firmware bytea not null );
+    create table app (
+      key text unique not null,
+      name text unique not null );
+"""
 
 import hashlib
 from collections import namedtuple
 from typing import NamedTuple
 from flask import Flask, request, Response
+import psycopg2
+import os
 
 app = Flask(__name__)
 
-FIRMWARE_LOCATION = "firmware-images"            # Location on the server
+DATABASE_URL = os.environ["DATABASE_URL"]       # Heroku maintains this value
+
+conn = psycopg2.connect(DATABASE_URL, sslmode="require")
 
 HashedFirmware = NamedTuple("HashedFirmware", [("data", bytes), ("md5", str)])    # Type def for firmware info
 
-
-def get_firmware(firmware_path: str) -> HashedFirmware:
-    with open(firmware_path, "rb") as f:
-        bin_image = f.read()
-    md5 = hashlib.md5(bin_image).hexdigest()
-    print("Found firmware bytes={} md5={}".format(len(bin_image), md5))
-    return HashedFirmware(bin_image, md5)
+MEGABYTES = 1024 * 1024
 
 
 @app.route('/')
@@ -28,7 +39,7 @@ def welcome():
 
 
 # Same as update but without the version checks
-@app.route("/test/<name>", methods=["GET"])
+@app.route("/test-get/<name>", methods=["GET"])
 def test_update(name):
     firmware = get_firmware(FIRMWARE_LOCATION + "/" + name)
 
@@ -36,17 +47,62 @@ def test_update(name):
     return Response(firmware.data, mimetype="application/octet-stream", headers={"X-MD5": firmware.md5})
 
 
-# door_opener.ino.bin
-@app.route("/update/<name>", methods=["GET"])
+def app_exists(cur, key: str) -> bool:
+    query = "SELECT * FROM app WHERE key = {key};"
+    cur.execute(query, [key])
+
+    return cur.fetchone() is not None
+
+
+@app.route("/put", methods=["POST"])
+def update():
+    if "key" not in request.headers:
+        return "Missing key", 422
+
+    key = request.headers["key"]        # Apparently case insensitive
+    cur = conn.cursor()
+
+    # Is this a known key?
+    if not app_exists(cur, key):
+        return "Bad key", 404
+
+    # Upload with filename "file"
+    if "file" not in request.files:
+        return "Missing file", 422
+
+    file = request.files["file"]
+    if file.filename == "":
+        return "Empty filename", 422
+
+    # Delete any existing firmware records
+    query = "DELETE FROM firmware WHERE key = {key};"
+    cur.execute(query, [key])
+
+    # Insert new firmware record
+    firmware = file.stream.read()
+
+    if len(firmware) > 3 * MEGABYTES:
+        return "Too big", 400
+
+
+    md5 = hashlib.md5(firmware)
+    query = "INSERT INTO firmware (key, md5, firmware);"
+    cur.execute(query, [key, md5, firmware])
+
+    return "Ok", 200
+
+
+
+@app.route("/get/<name>", methods=["GET"])
 def update(name):
     client_md5 = request.headers["HTTP_X_ESP8266_SKETCH_MD5"]
 
-    firmware = get_firmware(FIRMWARE_LOCATION + "/" + name)
+    firmware = get_firmware(name)
     if client_md5 == firmware.md5:
-        print("Already have most recent firmware")
+        # Already have most recent firmware
         return "", 302
 
-    print("Sending firmware")
+    # Sending firmware
     return Response(firmware.data, mimetype="application/octet-stream", headers={"X-MD5": firmware.md5})
 
 
@@ -63,6 +119,16 @@ def update(name):
     # 'HTTP_X_ESP8266_SKETCH_SIZE': '324512',
     # 'HTTP_X_ESP8266_STA_MAC': '2C:3A:E8:08:2C:38',
     # 'HTTP_X_ESP8266_VERSION': '0.120',
+
+
+def get_firmware(name: str) -> HashedFirmware:
+    with open(firmware_path, "rb") as f:
+        bin_image = f.read()
+    md5 = hashlib.md5(bin_image).hexdigest()
+    print("Found firmware bytes={} md5={}".format(len(bin_image), md5))
+    return HashedFirmware(bin_image, md5)
+
+
 
 if __name__ == "__main__":
     app.run()
