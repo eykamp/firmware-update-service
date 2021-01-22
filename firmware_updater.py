@@ -1,0 +1,58 @@
+import hashlib
+from collections import namedtuple
+from typing import NamedTuple
+from flask import Flask
+
+app = Flask(__name__)
+
+FIRMWARE_LOCATION = "/var/www/html/spy-pond-door/door_opener.ino.bin"            # Location on the server
+
+HashedFirware = NamedTuple("HashedFirware", [("data", bytes), ("md5", str)])    # Type def for firmware info
+
+
+def get_firmware(firmware_path: str) -> HashedFirware:
+    with open(firmware_path, "rb") as f:
+        bin_image = f.read()
+    md5 = hashlib.md5(bin_image).hexdigest()
+    print("Found firmware bytes={} md5={}".format(len(bin_image), md5))
+    return HashedFirware(bin_image, md5)
+
+
+@app.route('/')
+def hello_world():
+    return "Welcome to the Trans-Planetary Corporation Firmware Update Service!"
+
+
+@app.route("/update-spy-pond", methods=["GET"])
+def update():
+    # Returns the full file/path of the latest firmware, or None if we are
+    # already running the latest
+    # current_version = request.headers['HTTP_X_ESP8266_VERSION']
+    # mac = request.headers['HTTP_X_ESP8266_STA_MAC']
+    client_md5 = request.headers["HTTP_X_ESP8266_SKETCH_MD5"]
+
+    firmware = get_firmware(FIRMWARE_LOCATION)
+    if client_md5 == firmware.md5:
+        print("Already have most recent firmware")
+        return "", 302
+
+    print("Sending firmware")
+    return Response(firmware.data, mimetype="application/octet-stream", headers={"X-MD5": firmware.md5})
+
+
+    # Other available headers
+    # 'HTTP_CONNECTION': 'close',
+    # 'HTTP_HOST': 'www.sensorbot.org:8989',
+    # 'HTTP_USER_AGENT': 'ESP8266-http-Update',
+    # 'HTTP_X_ESP8266_AP_MAC': '2E:3A:E8:08:2C:38',
+    # 'HTTP_X_ESP8266_CHIP_SIZE': '4194304',
+    # 'HTTP_X_ESP8266_FREE_SPACE': '2818048',
+    # 'HTTP_X_ESP8266_MODE': 'sketch',
+    # 'HTTP_X_ESP8266_SDK_VERSION': '2.2.1(cfd48f3)',
+    # 'HTTP_X_ESP8266_SKETCH_MD5': '3f74331d79d8124c238361dcebbf3dc4',
+    # 'HTTP_X_ESP8266_SKETCH_SIZE': '324512',
+    # 'HTTP_X_ESP8266_STA_MAC': '2C:3A:E8:08:2C:38',
+    # 'HTTP_X_ESP8266_VERSION': '0.120',
+
+if __name__ == "__main__":
+    app.run()
