@@ -29,7 +29,7 @@ def welcome():
 
 # Same as update but without the version checks
 @app.route("/test/<name>", methods=["GET"])
-def update(name):
+def test_update(name):
     firmware = get_firmware(FIRMWARE_LOCATION + "/" + name)
 
     print("Sending firmware")
