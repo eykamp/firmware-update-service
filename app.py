@@ -6,21 +6,21 @@
 import hashlib
 from collections import namedtuple
 from typing import NamedTuple
-from flask import Flask
+from flask import Flask, request, Response
 
 app = Flask(__name__)
 
 FIRMWARE_LOCATION = "/var/www/html/spy-pond-door"            # Location on the server
 
-HashedFirware = NamedTuple("HashedFirware", [("data", bytes), ("md5", str)])    # Type def for firmware info
+HashedFirmware = NamedTuple("HashedFirmware", [("data", bytes), ("md5", str)])    # Type def for firmware info
 
 
-def get_firmware(firmware_path: str) -> HashedFirware:
+def get_firmware(firmware_path: str) -> HashedFirmware:
     with open(firmware_path, "rb") as f:
         bin_image = f.read()
     md5 = hashlib.md5(bin_image).hexdigest()
     print("Found firmware bytes={} md5={}".format(len(bin_image), md5))
-    return HashedFirware(bin_image, md5)
+    return HashedFirmware(bin_image, md5)
 
 
 @app.route('/')
@@ -33,8 +33,6 @@ def welcome():
 def update(name):
     # Returns the full file/path of the latest firmware, or None if we are
     # already running the latest
-    # current_version = request.headers['HTTP_X_ESP8266_VERSION']
-    # mac = request.headers['HTTP_X_ESP8266_STA_MAC']
     client_md5 = request.headers["HTTP_X_ESP8266_SKETCH_MD5"]
 
     firmware = get_firmware(FIRMWARE_LOCATION + "/" + name)
@@ -48,7 +46,7 @@ def update(name):
 
     # Other available headers
     # 'HTTP_CONNECTION': 'close',
-    # 'HTTP_HOST': 'www.sensorbot.org:8989',
+    # 'HTTP_HOST': 'www.abc.org:8989',
     # 'HTTP_USER_AGENT': 'ESP8266-http-Update',
     # 'HTTP_X_ESP8266_AP_MAC': '2E:3A:E8:08:2C:38',
     # 'HTTP_X_ESP8266_CHIP_SIZE': '4194304',
