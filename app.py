@@ -54,7 +54,7 @@ def test_update(name):
 
 def app_exists(cur, key: str) -> bool:
     query = "SELECT * FROM app WHERE key = {key};"
-    cur.execute(query, [key])
+    cur.execute(query, (key,))
 
     return cur.fetchone() is not None
 
