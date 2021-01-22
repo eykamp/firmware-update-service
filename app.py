@@ -53,8 +53,8 @@ def test_update(name):
 
 
 def app_exists(cur, key: str) -> bool:
-    query = "SELECT * FROM app WHERE key = {key};"
-    cur.execute(query, (key,))
+    query = "SELECT * FROM app WHERE key = %s;"
+    cur.execute(query, [key])
 
     return cur.fetchone() is not None
 
@@ -80,7 +80,7 @@ def upload_firmware():
         return "Empty filename", 422
 
     # Delete any existing firmware records
-    query = "DELETE FROM firmware WHERE key = {key};"
+    query = "DELETE FROM firmware WHERE key = %s;"
     cur.execute(query, [key])
 
     # Insert new firmware record
@@ -91,7 +91,7 @@ def upload_firmware():
 
 
     md5 = hashlib.md5(firmware)
-    query = "INSERT INTO firmware (key, md5, firmware);"
+    query = "INSERT INTO firmware (key, md5, firmware) values(%s, %s, %s);"
     cur.execute(query, [key, md5, firmware])
 
     return "Ok", 200
