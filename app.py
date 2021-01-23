@@ -155,6 +155,7 @@ def get_firmware_from_database(name: str) -> HashedFirmware:
     # Use key to get firmware
     query = "SELECT md5, firmware FROM firmware WHERE key = %s"
     row = cur.execute(query, [key])
+    row = cur.fetchone()
     if not row:
         print(f"No firmware for key '{key}' in firmware table", flush=True)
         raise Exception("No firwmare for key")
