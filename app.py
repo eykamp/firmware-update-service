@@ -73,6 +73,7 @@ def upload_firmware():
 
     # Upload with filename "file"
     if "file" not in request.files:
+        print(f"Missing file: request.files = {request.files}", flush=True)
         return "Missing file", 422
 
     file = request.files["file"]
