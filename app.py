@@ -70,6 +70,9 @@ def update(name):
     except Exception as ex:
         return str(ex), 422
 
+    if "HTTP_X_ESP8266_SKETCH_MD5" not in request.headers:
+        return "Missing header: HTTP_X_ESP8266_SKETCH_MD5", 422
+
     client_md5 = request.headers["HTTP_X_ESP8266_SKETCH_MD5"]
     if client_md5 == firmware.md5:
         # Already have most recent firmware
