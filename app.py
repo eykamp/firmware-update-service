@@ -145,18 +145,17 @@ def get_firmware_from_database(name: str) -> HashedFirmware:
 
     query = "SELECT key FROM app WHERE key = %s"
     cur.execute(query, [name])
-
-    query = "SELECT md5, firmware FROM firmware WHERE key = %s"
     row = cur.fetchone()
     if not row:
-        print(f"Cound not find name {name}", flush=True)
+        print(f"Cound not find name '{name}' in app table", flush=True)
         raise Exception("Could not find name")
-
     key = row[0]
 
+
+    query = "SELECT md5, firmware FROM firmware WHERE key = %s"
     row = cur.execute(query, [key])
     if not row:
-        print(f"No firmware for key {key}", flush=True)
+        print(f"No firmware for key '{key}' in firmware table", flush=True)
         raise Exception("No firwmare for key")
 
 
