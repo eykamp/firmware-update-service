@@ -91,7 +91,7 @@ def upload_firmware():
         return "Too big", 400
 
 
-    md5 = hashlib.md5(firmware)
+    md5 = hashlib.md5(firmware).hexdigest()
     query = "INSERT INTO firmware (key, md5, firmware) values(%s, %s, %s);"
     cur.execute(query, [key, md5, firmware])
 
