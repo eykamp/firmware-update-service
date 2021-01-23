@@ -143,7 +143,8 @@ def upload_firmware():
 def get_firmware_from_database(name: str) -> HashedFirmware:
     cur = conn.cursor()
 
-    query = "SELECT name FROM app WHERE key = %s"
+    # Get key
+    query = "SELECT key FROM app WHERE name = %s"
     cur.execute(query, [name])
     row = cur.fetchone()
     if not row:
@@ -151,7 +152,7 @@ def get_firmware_from_database(name: str) -> HashedFirmware:
         raise Exception("Could not find name")
     key = row[0]
 
-
+    # Use key to get firmware
     query = "SELECT md5, firmware FROM firmware WHERE key = %s"
     row = cur.execute(query, [key])
     if not row:
