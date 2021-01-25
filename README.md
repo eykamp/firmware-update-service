@@ -1,5 +1,5 @@
 # Motivation
-This project is intended to simplify the provision of firmware images for remote over-the-air (OTA) updates using the ESP8266 OTA library (see references).  It can also serve as a simple repository for firmware images for various projects.
+This project is intended to simplify the provision of firmware images for remote over-the-air (OTA) updates using the ESP8266 OTA library (see references).  It can also serve as a simple repository for firmware images for multiple projects.
 
 The code was written to work as a Heroku service, but should work fine on any server with only minor modifications.
 
