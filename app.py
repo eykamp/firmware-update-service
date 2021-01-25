@@ -11,14 +11,14 @@ Start postgres from cmd:
 
 Postgres table structure:
 
-    create table firmware (
-      key text unique not null,
-      md5 text not null,
-      firmware bytea not null );
+    CREATE TABLE firmware (
+        key TEXT UNIQUE NOT NULL,
+        md5 TEXT NOT NULL,
+        firmware BYTEA NOT NULL );
 
-    create table app (
-      key text unique not null,
-      name text unique not null );
+    CREATE TABLE app (
+        key TEXT UNIQUE NOT NULL,
+        name TEXT UNIQUE NOT NULL );
 """
 
 import hashlib
