@@ -41,6 +41,11 @@ In case of error, the service will return a code of 400, along with a brief stri
 # Requirements
 The service uses a Postgres database to store project information as well as the firware images themselves.  The table structure is specified in the code, but you'll have to create them manually.
 
+# Adding projects
+To add a new project, you'll need to add a record to the app table; all that's needed is a unique name and key, which acts as a password.  Keep this key private.  Users can download the firmware images using the name, so won't need your key.
+
+There are currently no plans to add any project management endpoints, though pull requests to do this would be considered.
+
 
 # References
 https://arduino-esp8266.readthedocs.io/en/latest/ota_updates/readme.html#http-server
