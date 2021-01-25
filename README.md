@@ -3,10 +3,12 @@ This project is intended to simplify the provision of firmware images for remote
 
 The code was written to work as a Heroku service, but should work fine on any server with only minor modifications.
 
+# Requirements
+The service uses a Postgres database to store project information as well as the firware images themselves.  The table structure is specified in the code, but you'll have to create them manually.
+
 # Endpoints
 <span style="background-color:#0f6ab4; width:50px; color: white; display: inline-block;    text-align: center;">GET</span> `get/<name>`
 > Return the firmware associated with &lt;name>; does not perform any version checks.
-
 
 <span style="background-color:#0f6ab4; width:50px; color: white; display: inline-block;    text-align: center;">GET</span> `get-esp/<name>`
 > The ESP OTA library sends a hash along with its request in the `HTTP_X_ESP8266_SKETCH_MD5` header.  This endpoint will check the sent hash against the one in the database.  If the hashes match, a 302 code is returned, which signals ESP OTA that no update is required; if they do not match, the firmware associated with &lt;name> will be sent, which will trigger the device to update.
@@ -38,8 +40,6 @@ In case of error, the service will return a code of 400, along with a brief stri
 - `Bad key`: Key is incorrect or unknown.
 - `Too big`: Supplied file is too large for the system.
 
-# Requirements
-The service uses a Postgres database to store project information as well as the firware images themselves.  The table structure is specified in the code, but you'll have to create them manually.
 
 # Adding projects
 To add a new project, you'll need to add a record to the app table; all that's needed is a unique name and key, which acts as a password.  Keep this key private.  Users can download the firmware images using the name, so won't need your key.
