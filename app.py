@@ -1,10 +1,12 @@
+# (C) 2021 Chris Eykamp
+#
 # To deploy to Heroku:
 #   For production: git push pro master
-
+#
 # View logs: heroku logs --tail --remote pro
-
+#
 # curl -F "firmware=@filename" -H "key: 12345" https://firmware-update-service.herokuapp.com/put
-
+#
 """
 Start postgres from cmd:
     heroku pg:psql -a firmware-update-service
