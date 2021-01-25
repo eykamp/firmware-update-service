@@ -39,7 +39,7 @@ In case of error, the service will return a code of 400, along with a brief stri
 - `Too big`: Supplied file is too large for the system
 
 # Requirements
-The service uses a Postgres database to store project information as well as the firware images themselves.  The table structure is specified in the code.
+The service uses a Postgres database to store project information as well as the firware images themselves.  The table structure is specified in the code, but you'll have to create them manually.
 
 
 # References
