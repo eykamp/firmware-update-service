@@ -1,6 +1,7 @@
 # Motivation
 This project is intended to simplify the provision of firmware images for remote over-the-air (OTA) updates using the ESP8266 OTA library (see references).  It can also serve as a simple repository for firmware images for various projects.
 
+The code was written to work as a Heroku service, but should work fine on any server with only minor modifications.
 
 # Endpoints
 <span style="background-color:#0f6ab4; width:50px; color: white; display: inline-block;    text-align: center;">GET</span> `get/<name>`
@@ -38,7 +39,7 @@ In case of error, the service will return a code of 400, along with a brief stri
 - `Too big`: Supplied file is too large for the system
 
 # Requirements
-The code was written to work as a Heroku service, but should work fine on any server with only minor modifications.  It uses a Postgres database to store project information as well as the firware images themselves.  The table structure is specified in the code.
+The service uses a Postgres database to store project information as well as the firware images themselves.  The table structure is specified in the code.
 
 
 # References
