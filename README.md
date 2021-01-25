@@ -27,16 +27,16 @@ The code was written to work as a Heroku service, but should work fine on any se
 In case of error, the service will return a code of 400, along with a brief string message describing the problem.
 
 ### Errors retrieving firmware
-- `Could not find name`: Requested name does not exist
-- `No firwmare for name`: No firmware has been uploaded for the specified name
-- `Missing header: HTTP_X_ESP8266_SKETCH_MD5`: When requeting firmware using the get-esp endpoint, required header `HTTP_X_ESP8266_SKETCH_MD5` is missing
+- `Could not find name`: Requested name does not exist.
+- `No firwmare for name`: No firmware has been uploaded for the specified name.
+- `Missing header: HTTP_X_ESP8266_SKETCH_MD5`: When requeting firmware using the get-esp endpoint, required header `HTTP_X_ESP8266_SKETCH_MD5` is missing.  This header is added automatically by the standard ESP OTA code.
 
 ### Errors uploading firmware
-- `Missing file`: No file was included with request (file should be passed with the name "firmware" -- see curl example under upload)
-- `Empty filename`: Specified filename is empty
-- `Missing key`: Request did not include a required key header
-- `Bad key`: Key is incorrect or unknown
-- `Too big`: Supplied file is too large for the system
+- `Missing file`: No file was included with request (file should be passed with the name "firmware" -- see curl example under upload).
+- `Empty filename`: Specified filename is empty.
+- `Missing key`: Request did not include a required key header.
+- `Bad key`: Key is incorrect or unknown.
+- `Too big`: Supplied file is too large for the system.
 
 # Requirements
 The service uses a Postgres database to store project information as well as the firware images themselves.  The table structure is specified in the code, but you'll have to create them manually.
