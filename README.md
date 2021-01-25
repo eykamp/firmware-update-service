@@ -20,7 +20,7 @@ The code was written to work as a Heroku service, but should work fine on any se
 >
 > `curl -F "firmware=@<firmware_file>" -H "key: <your_key>" <server-url>/upload`
 >
-> Substitute your firmware file, key, and server URL as appropriate.  Note that the @ is required.
+> Substitute your firmware file, key, and server URL as appropriate.  Note that the `@` is required.
 
 
 # Errors
