@@ -9,7 +9,7 @@ The code was written to work as a Heroku service, but should work fine on any se
 
 
 <span style="background-color:#0f6ab4; width:50px; color: white; display: inline-block;    text-align: center;">GET</span> `get-esp/<name>`
-> The ESP OTA library sends a hash along with its request in the `HTTP_X_ESP8266_SKETCH_MD5` header.  This endpoint will check the sent hash against the one in the database.  If the hashes match, a 302 code is returned, which signals ESP OTA that no update is required; if they do not match, the firnware will be sent, which will trigger an update.
+> The ESP OTA library sends a hash along with its request in the `HTTP_X_ESP8266_SKETCH_MD5` header.  This endpoint will check the sent hash against the one in the database.  If the hashes match, a 302 code is returned, which signals ESP OTA that no update is required; if they do not match, the firmware associated with &lt;name> will be sent, which will trigger the device to update.
 >
 >Note that the header `HTTP_X_ESP8266_SKETCH_MD5` is mandatory with this endpoint, and is automatically supplied with the standard ESP OTA request.
 
